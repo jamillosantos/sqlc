@@ -205,6 +205,11 @@ func (m *GoCode) CloneVT() *GoCode {
 		tmpVal := *rhs
 		r.QueryParameterLimit = &tmpVal
 	}
+	if rhs := m.FilterModels; rhs != nil {
+		tmpContainer := make([]string, len(rhs))
+		copy(tmpContainer, rhs)
+		r.FilterModels = tmpContainer
+	}
 	if len(m.unknownFields) > 0 {
 		r.unknownFields = make([]byte, len(m.unknownFields))
 		copy(r.unknownFields, m.unknownFields)
@@ -837,6 +842,15 @@ func (this *GoCode) EqualVT(that *GoCode) bool {
 	}
 	if this.OmitUnusedStructs != that.OmitUnusedStructs {
 		return false
+	}
+	if len(this.FilterModels) != len(that.FilterModels) {
+		return false
+	}
+	for i, vx := range this.FilterModels {
+		vy := that.FilterModels[i]
+		if vx != vy {
+			return false
+		}
 	}
 	return string(this.unknownFields) == string(that.unknownFields)
 }
@@ -1783,6 +1797,17 @@ func (m *GoCode) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 	if m.unknownFields != nil {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
+	}
+	if len(m.FilterModels) > 0 {
+		for iNdEx := len(m.FilterModels) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.FilterModels[iNdEx])
+			copy(dAtA[i:], m.FilterModels[iNdEx])
+			i = encodeVarint(dAtA, i, uint64(len(m.FilterModels[iNdEx])))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0xe2
+		}
 	}
 	if m.OmitUnusedStructs {
 		i--
@@ -3367,6 +3392,17 @@ func (m *GoCode) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
+	if len(m.FilterModels) > 0 {
+		for iNdEx := len(m.FilterModels) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.FilterModels[iNdEx])
+			copy(dAtA[i:], m.FilterModels[iNdEx])
+			i = encodeVarint(dAtA, i, uint64(len(m.FilterModels[iNdEx])))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0xe2
+		}
+	}
 	if m.OmitUnusedStructs {
 		i--
 		if m.OmitUnusedStructs {
@@ -4766,6 +4802,12 @@ func (m *GoCode) SizeVT() (n int) {
 	}
 	if m.OmitUnusedStructs {
 		n += 3
+	}
+	if len(m.FilterModels) > 0 {
+		for _, s := range m.FilterModels {
+			l = len(s)
+			n += 2 + l + sov(uint64(l))
+		}
 	}
 	n += len(m.unknownFields)
 	return n
@@ -7130,6 +7172,38 @@ func (m *GoCode) UnmarshalVT(dAtA []byte) error {
 				}
 			}
 			m.OmitUnusedStructs = bool(v != 0)
+		case 28:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field FilterModels", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.FilterModels = append(m.FilterModels, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skip(dAtA[iNdEx:])

@@ -105,7 +105,40 @@ func buildStructs(req *plugin.CodeGenRequest) []Struct {
 	if len(structs) > 0 {
 		sort.Slice(structs, func(i, j int) bool { return structs[i].Name < structs[j].Name })
 	}
-	return structs
+	return filterStructs(req.GetSettings().GetGo().GetFilterModels(), structs)
+}
+
+func filterStructs(filter []string, structs []Struct) []Struct {
+	if len(filter) == 0 {
+		return structs
+	}
+
+	out := make([]Struct, 0, len(structs))
+	for _, s := range structs {
+		structIncluded := true
+		for _, f := range filter {
+			if f == "" {
+				continue
+			}
+			var (
+				include   = f[0] != '-'
+				modelName string
+			)
+			switch {
+			case f[0] == '+', f[0] == '-':
+				modelName = f[1:]
+			default:
+				modelName = f
+			}
+			if modelName == "*" || modelName == s.Name {
+				structIncluded = include
+			}
+		}
+		if structIncluded {
+			out = append(out, s)
+		}
+	}
+	return out
 }
 
 type goColumn struct {
