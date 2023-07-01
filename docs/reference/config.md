@@ -166,6 +166,13 @@ The `gen` mapping supports the following keys:
   - Customize the name of generated struct fields. Explained in detail on the `Renaming fields` section.
 - `overrides`:
   - It is a collection of definitions that dictates which types are used to map a database types. Explained in detail on the  `Type overriding` section.
+- `filter_models`:
+  - A list of expressions to filter the models to be generated. By default, the filter will include all models. Defaults to `[]`.
+  - The filter list is evaluated in sequence:
+    - `+*` include all models;
+    - `-*` exclude all models;
+    - `+<ModelName>` or `<ModelName>` add a specific model;
+    - `-<ModelName>` excludes a specific model;
 
 ##### Renaming fields
 
